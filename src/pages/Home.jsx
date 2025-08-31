@@ -64,7 +64,7 @@ const Home = () => {
             <img
               src={image}
               alt="Album Art"
-              className="w-full h-full object-contain rounded-lg"
+              className="w-full h-full object-contain rounded-lg mt-4"
             />
           ) : (
             <div className="w-full h-115 flex items-center justify-center flex-col gap-2 border-2 border-dashed border-gray-300 rounded-lg p-4 mt-4">
@@ -86,6 +86,9 @@ const Home = () => {
             </div>
           )}
         </section>
+        <button className="mt-2 px-4 py-2 bg-blue-400 text-white rounded-lg text-md w-full">
+          Download
+        </button>
         <section className="w-full flex justify-center items-center mt-2 gap-1 text-xs pb-2">
           <h1>Powered by </h1>
           <a
