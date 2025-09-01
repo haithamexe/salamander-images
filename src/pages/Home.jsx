@@ -1829,8 +1829,18 @@ const PhotoEditor = () => {
       if (!search) return;
 
       const results = await searchTracks(search);
-      setSearchedSongs(results);
+      setSearchedSongs(results.tracks.items);
       console.log("Search results:", results);
+      console.log("Search results:", results.tracks.items);
+      console.log("Search results:", results?.tracks?.items[0]?.name);
+      console.log(
+        "Search results:",
+        results?.tracks?.items[0]?.artists[0]?.name
+      );
+      console.log(
+        "Search results:",
+        results?.tracks?.items[0]?.album?.images?.[0]?.url
+      );
     };
 
     fetchData();
@@ -1876,16 +1886,17 @@ const PhotoEditor = () => {
       id: Date.now(),
       x: Math.random() * maxX,
       y: Math.random() * maxY,
-      width: 220, // Reduced width since image is smaller
-      height: 80, // Reduced height for more compact design
+      width: 150, // Reduced width since image is smaller
+      height: 60, // Reduced height for more compact design
       text: song.name,
-      artist: song.artists?.[0]?.name || song.artist || "Unknown Artist",
-      imageUrl: song.album?.images?.[0]?.url || song.image || null,
-      fontSize: 14,
-      color: "#FFFFFF",
-      backgroundColor: "rgba(0, 0, 0, 0.8)", // Slightly more opaque
-      borderColor: "#FFD700",
-      borderWidth: 2,
+      artist: song.artists?.[0]?.name || "Unknown Artist",
+      imageUrl: song.album?.images?.[0]?.url || null,
+      fontSize: 10,
+      color: "#000000",
+      backgroundColor: "rgba(255, 255, 255)", // Slightly more opaque
+      borderColor: "#000000",
+      borderWidth: 1,
+      borderRadius: 4, // Rounded corners
     };
 
     setDivs([...divs, newDiv]);
@@ -2293,7 +2304,7 @@ const PhotoEditor = () => {
         />
 
         {/* Search Results */}
-        {searchedSongs.length > 0 && (
+        {searchedSongs.length > 0 && search && (
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
             <h3 className="text-lg font-semibold mb-3">Search Results</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -2301,7 +2312,10 @@ const PhotoEditor = () => {
                 <div
                   key={index}
                   className="flex items-center p-2 border rounded hover:bg-gray-50 cursor-pointer"
-                  onClick={() => addSongDiv(song)}
+                  onClick={() => {
+                    addSongDiv(song);
+                    setSearch("");
+                  }}
                 >
                   {song.album?.images?.[0]?.url && (
                     <img
@@ -2432,10 +2446,10 @@ const PhotoEditor = () => {
                           />
                         </div>
                       ) : (
-                        <div className="w-full h-full flex items-center p-2">
+                        <div className="w-full h-full flex items-center p-0">
                           {/* Song Image */}
                           {div.imageUrl && (
-                            <div className="w-12 h-12 mr-3 flex-shrink-0">
+                            <div className="w-12 h-12 mr-2 flex-shrink-0">
                               <img
                                 src={div.imageUrl}
                                 alt="Album cover"
