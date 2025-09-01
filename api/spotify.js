@@ -25,9 +25,7 @@ export default async function handler(req, res) {
           Authorization:
             "Basic " +
             Buffer.from(
-              `${import.meta.env.SPOTIFY_CLIENT_ID}:${
-                import.meta.env.SPOTIFY_CLIENT_SECRET
-              }`
+              `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
             ).toString("base64"),
         },
         body: "grant_type=client_credentials",
