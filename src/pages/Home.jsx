@@ -378,7 +378,7 @@ const Home = () => {
   return (
     <div
       className={`min-h-screen ${
-        sheSearched ? "bg-[#92A07F]" : "bg-gray-200"
+        sheSearched ? "bg-[#92A07F]" : "bg-gray-100"
       } p-4`}
     >
       <div className="max-w-6xl mx-auto">
@@ -455,7 +455,7 @@ const Home = () => {
             </div>
             <button
               onClick={triggerFileInput}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              className="bg-black hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
               Upload Photo
             </button>
@@ -583,7 +583,7 @@ const Home = () => {
               <div className="flex gap-2 flex-wrap mt-4">
                 <button
                   onClick={triggerFileInput}
-                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex-1 justify-center"
+                  className="flex items-center gap-2 bg-black hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex-1 justify-center"
                 >
                   <Upload size={16} />
                   Replace Image
