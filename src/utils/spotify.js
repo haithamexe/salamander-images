@@ -3,7 +3,7 @@ export async function searchTracks(query) {
   const response = await fetch(
     `/api/spotify?action=search&q=${encodeURIComponent(
       query
-    )}&type=track&limit=10`
+    )}&type=track&limit=30`
   );
   if (!response.ok) throw new Error("Spotify search failed");
   return response.json();

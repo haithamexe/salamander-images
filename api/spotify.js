@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
     switch (action) {
       case "search":
-        const { q, type = "track", limit = 20 } = params;
+        const { q, type = "track", limit = 30 } = params;
         spotifyUrl += `search?q=${encodeURIComponent(
           q
         )}&type=${type}&limit=${limit}`;
