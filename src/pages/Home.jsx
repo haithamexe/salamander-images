@@ -2,6 +2,33 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Plus, Download, Trash2, Move, Upload, Search } from "lucide-react";
 import { searchTracks } from "../utils/spotify";
 
+export function ResizableImageBox() {
+  return (
+    <div className="p-4">
+      <label className="block mb-2 font-medium">
+        Resizable image (drag lower-right corner)
+      </label>
+
+      {/* The resizable wrapper */}
+      <div
+        className="resize overflow-auto border rounded-md shadow w-72 h-56"
+        /* If you’re not using Tailwind’s `resize` class, you can also do: style={{ resize: 'both' }} */
+      >
+        <img
+          src="https://picsum.photos/800/600" // replace with your image
+          alt="Resizable"
+          className="w-full h-full object-contain select-none pointer-events-none bg-neutral-100"
+        />
+      </div>
+
+      <p className="text-sm text-neutral-500 mt-2">
+        Works like a textarea: drag the corner to resize. The image keeps its
+        aspect ratio via <code>object-contain</code>.
+      </p>
+    </div>
+  );
+}
+
 const Home = () => {
   const [image, setImage] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -25,6 +52,7 @@ const Home = () => {
   const [searchedSongs, setSearchedSongs] = useState([]);
 
   const [search, setSearch] = useState("");
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,9 +73,12 @@ const Home = () => {
         results?.tracks?.items[0]?.album?.images?.[0]?.url
       );
     };
-
-    fetchData();
-  }, [search]);
+    if (focused) {
+      fetchData();
+    } else {
+      setSearchedSongs([]);
+    }
+  }, [search, focused]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -99,7 +130,7 @@ const Home = () => {
       id: Date.now(),
       x: Math.random() * maxX,
       y: Math.random() * maxY,
-      width: 130,
+      width: 20,
       height: 40,
       text: song.name,
       artist: song.artists?.[0]?.name || "Unknown Artist",
@@ -219,165 +250,165 @@ const Home = () => {
   }, [draggedDiv, handleMove, handleDragEnd]);
 
   // Simplified download function using DOM-to-image approach
-  const downloadImage = async () => {
-    if (!imageLoaded || !containerRef.current) {
-      alert("Please wait for the image to load completely");
-      return;
-    }
+  // const downloadImage = async () => {
+  //   if (!imageLoaded || !containerRef.current) {
+  //     alert("Please wait for the image to load completely");
+  //     return;
+  //   }
 
-    try {
-      const container = containerRef.current;
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+  //   try {
+  //     const container = containerRef.current;
+  //     const canvas = document.createElement("canvas");
+  //     const ctx = canvas.getContext("2d");
 
-      // Get the displayed size of the image
-      const img = imageRef.current;
-      const rect = container.getBoundingClientRect();
+  //     // Get the displayed size of the image
+  //     const img = imageRef.current;
+  //     const rect = container.getBoundingClientRect();
 
-      // Set canvas size to match the displayed image
-      canvas.width = rect.width;
-      canvas.height = rect.height;
+  //     // Set canvas size to match the displayed image
+  //     canvas.width = rect.width;
+  //     canvas.height = rect.height;
 
-      // Draw the background image
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  //     // Draw the background image
+  //     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      // Process each song div
-      for (const div of divs) {
-        // Draw background with rounded corners
-        ctx.save();
+  //     // Process each song div
+  //     for (const div of divs) {
+  //       // Draw background with rounded corners
+  //       ctx.save();
 
-        // Create rounded rectangle path
-        const radius = 5;
-        ctx.beginPath();
-        ctx.moveTo(div.x + radius, div.y);
-        ctx.lineTo(div.x + div.width - radius, div.y);
-        ctx.quadraticCurveTo(
-          div.x + div.width,
-          div.y,
-          div.x + div.width,
-          div.y + radius
-        );
-        ctx.lineTo(div.x + div.width, div.y + div.height - radius);
-        ctx.quadraticCurveTo(
-          div.x + div.width,
-          div.y + div.height,
-          div.x + div.width - radius,
-          div.y + div.height
-        );
-        ctx.lineTo(div.x + radius, div.y + div.height);
-        ctx.quadraticCurveTo(
-          div.x,
-          div.y + div.height,
-          div.x,
-          div.y + div.height - radius
-        );
-        ctx.lineTo(div.x, div.y + radius);
-        ctx.quadraticCurveTo(div.x, div.y, div.x + radius, div.y);
-        ctx.closePath();
+  //       // Create rounded rectangle path
+  //       const radius = 5;
+  //       ctx.beginPath();
+  //       ctx.moveTo(div.x + radius, div.y);
+  //       ctx.lineTo(div.x + div.width - radius, div.y);
+  //       ctx.quadraticCurveTo(
+  //         div.x + div.width,
+  //         div.y,
+  //         div.x + div.width,
+  //         div.y + radius
+  //       );
+  //       ctx.lineTo(div.x + div.width, div.y + div.height - radius);
+  //       ctx.quadraticCurveTo(
+  //         div.x + div.width,
+  //         div.y + div.height,
+  //         div.x + div.width - radius,
+  //         div.y + div.height
+  //       );
+  //       ctx.lineTo(div.x + radius, div.y + div.height);
+  //       ctx.quadraticCurveTo(
+  //         div.x,
+  //         div.y + div.height,
+  //         div.x,
+  //         div.y + div.height - radius
+  //       );
+  //       ctx.lineTo(div.x, div.y + radius);
+  //       ctx.quadraticCurveTo(div.x, div.y, div.x + radius, div.y);
+  //       ctx.closePath();
 
-        // Fill background
-        ctx.fillStyle = "rgba(255, 255, 255)";
-        ctx.fill();
+  //       // Fill background
+  //       ctx.fillStyle = "rgba(255, 255, 255)";
+  //       ctx.fill();
 
-        // Draw border
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 1;
-        ctx.stroke();
+  //       // Draw border
+  //       ctx.strokeStyle = "#000000";
+  //       ctx.lineWidth = 1;
+  //       ctx.stroke();
 
-        // Clip to rounded rectangle for content
-        ctx.clip();
+  //       // Clip to rounded rectangle for content
+  //       ctx.clip();
 
-        const padding = 12;
-        let textStartX = div.x + padding;
+  //       const padding = 12;
+  //       let textStartX = div.x + padding;
 
-        // Draw album image if available
-        if (div.imageUrl) {
-          try {
-            const albumImg = new Image();
-            albumImg.crossOrigin = "anonymous";
-            await new Promise((resolve, reject) => {
-              albumImg.onload = resolve;
-              albumImg.onerror = reject;
-              albumImg.src = div.imageUrl;
-            });
+  //       // Draw album image if available
+  //       if (div.imageUrl) {
+  //         try {
+  //           const albumImg = new Image();
+  //           albumImg.crossOrigin = "anonymous";
+  //           await new Promise((resolve, reject) => {
+  //             albumImg.onload = resolve;
+  //             albumImg.onerror = reject;
+  //             albumImg.src = div.imageUrl;
+  //           });
 
-            const imageSize = 50;
-            const imageY = div.y + (div.height - imageSize) / 2;
-            ctx.drawImage(albumImg, textStartX, imageY, imageSize, imageSize);
-            textStartX += imageSize + padding;
-          } catch (error) {
-            console.warn("Failed to load album image:", error);
-          }
-        }
+  //           const imageSize = 50;
+  //           const imageY = div.y + (div.height - imageSize) / 2;
+  //           ctx.drawImage(albumImg, textStartX, imageY, imageSize, imageSize);
+  //           textStartX += imageSize + padding;
+  //         } catch (error) {
+  //           console.warn("Failed to load album image:", error);
+  //         }
+  //       }
 
-        // Draw text
-        const textWidth = div.x + div.width - textStartX - padding;
+  //       // Draw text
+  //       const textWidth = div.x + div.width - textStartX - padding;
 
-        // Song name
-        ctx.fillStyle = "#000000";
-        ctx.font = "bold 14px Arial, sans-serif";
-        ctx.textAlign = "left";
-        ctx.textBaseline = "bottom";
+  //       // Song name
+  //       ctx.fillStyle = "#000000";
+  //       ctx.font = "bold 14px Arial, sans-serif";
+  //       ctx.textAlign = "left";
+  //       ctx.textBaseline = "bottom";
 
-        const songY = div.y + padding + div.height * 0.3;
-        const truncatedSong = truncateText(ctx, div.text, textWidth);
-        ctx.fillText(truncatedSong, textStartX, songY);
+  //       const songY = div.y + padding + div.height * 0.3;
+  //       const truncatedSong = truncateText(ctx, div.text, textWidth);
+  //       ctx.fillText(truncatedSong, textStartX, songY);
 
-        // Artist name
-        ctx.fillStyle = "#808080";
-        ctx.font = "12px Arial, sans-serif";
-        const artistY = div.y + padding + div.height * 0.65;
-        const truncatedArtist = truncateText(ctx, div.artist, textWidth);
-        ctx.fillText(truncatedArtist, textStartX, artistY);
+  //       // Artist name
+  //       ctx.fillStyle = "#808080";
+  //       ctx.font = "12px Arial, sans-serif";
+  //       const artistY = div.y + padding + div.height * 0.65;
+  //       const truncatedArtist = truncateText(ctx, div.artist, textWidth);
+  //       ctx.fillText(truncatedArtist, textStartX, artistY);
 
-        ctx.restore();
-      }
+  //       ctx.restore();
+  //     }
 
-      // Download the canvas
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `song-photo-${Date.now()}.png`;
-            link.style.display = "none";
+  //     // Download the canvas
+  //     canvas.toBlob(
+  //       (blob) => {
+  //         if (blob) {
+  //           const url = URL.createObjectURL(blob);
+  //           const link = document.createElement("a");
+  //           link.href = url;
+  //           link.download = `song-photo-${Date.now()}.png`;
+  //           link.style.display = "none";
 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+  //           document.body.appendChild(link);
+  //           link.click();
+  //           document.body.removeChild(link);
 
-            setTimeout(() => URL.revokeObjectURL(url), 100);
-          }
-        },
-        "image/png",
-        1.0
-      );
-    } catch (error) {
-      console.error("Download failed:", error);
-      alert("Download failed. Please try again.");
-    }
-  };
+  //           setTimeout(() => URL.revokeObjectURL(url), 100);
+  //         }
+  //       },
+  //       "image/png",
+  //       1.0
+  //     );
+  //   } catch (error) {
+  //     console.error("Download failed:", error);
+  //     alert("Download failed. Please try again.");
+  //   }
+  // };
 
   // Helper function to truncate text
-  const truncateText = (ctx, text, maxWidth) => {
-    if (ctx.measureText(text).width <= maxWidth) {
-      return text;
-    }
+  // const truncateText = (ctx, text, maxWidth) => {
+  //   if (ctx.measureText(text).width <= maxWidth) {
+  //     return text;
+  //   }
 
-    let truncated = text;
-    while (
-      ctx.measureText(truncated + "...").width > maxWidth &&
-      truncated.length > 0
-    ) {
-      truncated = truncated.slice(0, -1);
-    }
-    return truncated + "...";
-  };
+  //   let truncated = text;
+  //   while (
+  //     ctx.measureText(truncated + "...").width > maxWidth &&
+  //     truncated.length > 0
+  //   ) {
+  //     truncated = truncated.slice(0, -1);
+  //   }
+  //   return truncated + "...";
+  // };
 
   return (
     <div
-      className={`min-h-screen ${
+      className={`min-h-full ${
         sheSearched ? "bg-[#92A07F]" : "bg-gray-100"
       } p-4`}
     >
@@ -394,6 +425,8 @@ const Home = () => {
               placeholder="Search for songs..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              onBlur={() => setFocused(false)}
+              onFocus={() => setFocused(true)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -407,7 +440,7 @@ const Home = () => {
 
         {/* Search Results */}
         {searchedSongs.length > 0 && search && (
-          <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-4 mb-6 ">
             <h3 className="text-lg font-semibold mb-3">Search Results</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {searchedSongs.map((song, index) => (
@@ -488,7 +521,7 @@ const Home = () => {
                     ref={imageRef}
                     src={image}
                     alt="Uploaded"
-                    className="max-w-full h-auto block"
+                    className="max-w-full h-auto block %]"
                     onLoad={() => setImageLoaded(true)}
                     style={{ maxHeight: "70vh" }}
                   />
@@ -497,7 +530,7 @@ const Home = () => {
                   {divs.map((div) => (
                     <div
                       key={div.id}
-                      className={`absolute cursor-move select-none touch-none ${
+                      className={`absolute cursor-move select-none touch-none scale-[120%] ${
                         sheSearched ? "bg-[#92A07F]" : "bg-white"
                       } bg-opacity-95  rounded-xs shadow-lg ${
                         selectedDiv === div.id ? "ring-2 ring-blue-500" : ""
@@ -668,7 +701,7 @@ const Home = () => {
           </div>
         )}
       </div>
-      <div className="mt-4 flex gap-2 justify-center items-center text-xs">
+      {/* <div className="mt-4 flex gap-2 justify-center items-center text-xs">
         <h1>Powered by</h1>
         <a
           href="https://haithamexe.com"
@@ -678,7 +711,7 @@ const Home = () => {
         >
           <h1>Haitham Jalal</h1>
         </a>
-      </div>
+      </div> */}
     </div>
   );
 };
